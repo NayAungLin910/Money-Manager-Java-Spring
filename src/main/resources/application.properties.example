@@ -3,7 +3,7 @@ spring.application.name=moneymanager
 spring.datasource.url=jdbc:mysql://localhost:3306/moneymanager
 spring.datasource.username=
 spring.datasource.password=
-server.servlet.context-patzh=/api/v1.0
+server.servlet.context-path=/api/v1.0
 # JPA Configuration
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
