@@ -1,6 +1,7 @@
 package react.moneymanager.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import react.moneymanager.dto.ProfileDto;
 import react.moneymanager.entity.ProfileEntity;
@@ -13,6 +14,7 @@ import java.util.UUID;
 public class ProfileService {
     private final ProfileRepository profileRepository;
     private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
 
     public ProfileDto registerProfile(ProfileDto profileDto) {
         ProfileEntity newProfile = toEntity(profileDto);
@@ -31,7 +33,7 @@ public class ProfileService {
                 .id(profileDto.getId())
                 .fullName(profileDto.getFullName())
                 .email(profileDto.getEmail())
-                .password(profileDto.getPassword())
+                .password(passwordEncoder.encode(profileDto.getPassword()))
                 .profileImagUrl(profileDto.getProfileImagUrl())
                 .createdAt(profileDto.getCreatedAt())
                 .updatedAt(profileDto.getUpdatedAt())
@@ -57,5 +59,9 @@ public class ProfileService {
                     profileRepository.save(profile);
                     return true;
                 }).orElse(false);
+    }
+
+    public boolean isAccountActive(String email) {
+        return profileRepository.findByEmail(email).map(ProfileEntity::getIsActive).orElse(false);
     }
 }
