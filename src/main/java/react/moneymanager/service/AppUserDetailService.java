@@ -18,7 +18,10 @@ public class AppUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        ProfileEntity profile = profileRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found with the email + " + email));
+        ProfileEntity profile = profileRepository.findByEmail(email).orElseThrow(
+                () -> new UsernameNotFoundException("User not found with the email + " + email
+                )
+        );
         return User.builder()
                 .username(profile.getEmail())
                 .password(profile.getPassword())

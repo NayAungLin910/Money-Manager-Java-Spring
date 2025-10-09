@@ -1,6 +1,9 @@
 package react.moneymanager.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import react.moneymanager.dto.ProfileDto;
@@ -52,6 +55,22 @@ public class ProfileService {
                 .build();
     }
 
+    public ProfileDto toDto(ProfileEntity profileEntity, boolean isPublic) {
+
+        ProfileDto.ProfileDtoBuilder profileDtoBuilder = ProfileDto.builder()
+                .fullName(profileEntity.getFullName())
+                .email(profileEntity.getEmail())
+                .profileImagUrl(profileEntity.getProfileImagUrl())
+                .createdAt(profileEntity.getCreatedAt())
+                .updatedAt(profileEntity.getUpdatedAt());
+        if (!isPublic) {
+            profileDtoBuilder.password(profileEntity.getPassword()).id(profileEntity.getId());
+        }
+
+        return profileDtoBuilder.build();
+    }
+
+
     public boolean activateProfile(String activationToken) {
         return profileRepository.findByActivationToken(activationToken).map(
                 profile -> {
@@ -63,5 +82,24 @@ public class ProfileService {
 
     public boolean isAccountActive(String email) {
         return profileRepository.findByEmail(email).map(ProfileEntity::getIsActive).orElse(false);
+    }
+
+    public ProfileEntity getCurrentProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return profileRepository.findByEmail(authentication.getName()).orElseThrow(
+                () -> new UsernameNotFoundException("User not found with the email + " + authentication.getName())
+        );
+    }
+
+    public ProfileDto getPublicProfile(String email) {
+        ProfileEntity currentUser = null;
+        if (email == null) {
+            currentUser = getCurrentProfile();
+        } else {
+            currentUser = profileRepository.findByEmail(email).orElseThrow(
+                    () -> new UsernameNotFoundException("User not found with the email + " + email)
+            );
+        }
+        return toDto(currentUser, true);
     }
 }
