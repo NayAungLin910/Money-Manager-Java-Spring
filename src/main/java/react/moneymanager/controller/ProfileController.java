@@ -8,6 +8,7 @@ import react.moneymanager.dto.AuthDTO;
 import react.moneymanager.dto.ProfileDto;
 import react.moneymanager.service.ProfileService;
 
+import javax.swing.*;
 import java.util.Map;
 
 @RestController
@@ -49,5 +50,10 @@ public class ProfileController {
                     e.getMessage()
             ));
         }
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return "Test successful!";
     }
 }

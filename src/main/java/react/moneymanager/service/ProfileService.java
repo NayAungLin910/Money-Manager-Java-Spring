@@ -119,7 +119,7 @@ public class ProfileService {
                     "token", token,
                     "user", getPublicProfile(authDTO.getEmail()));
         } catch (Exception e) {
-            throw new RuntimeException("Invalid email or password!");
+               throw new RuntimeException("Invalid email or password!");
         }
     }
 

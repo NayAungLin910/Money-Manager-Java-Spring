@@ -1,6 +1,7 @@
 package react.moneymanager.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,6 +26,7 @@ public class AppUserDetailService implements UserDetailsService {
         return User.builder()
                 .username(profile.getEmail())
                 .password(profile.getPassword())
-                .authorities(Collections.emptyList()).build();
+                .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
+                .build();
     }
 }
