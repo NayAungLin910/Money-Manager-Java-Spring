@@ -26,7 +26,7 @@ public class AppUserDetailService implements UserDetailsService {
         return User.builder()
                 .username(profile.getEmail())
                 .password(profile.getPassword())
-                .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
+                .authorities(Collections.emptyList())
                 .build();
     }
 }
