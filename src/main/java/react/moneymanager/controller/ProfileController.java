@@ -5,10 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import react.moneymanager.dto.AuthDTO;
-import react.moneymanager.dto.ProfileDto;
+import react.moneymanager.dto.ProfileDTO;
 import react.moneymanager.service.ProfileService;
 
-import javax.swing.*;
 import java.util.Map;
 
 @RestController
@@ -17,8 +16,8 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @PostMapping("/register")
-    public ResponseEntity<ProfileDto> registerProfile(@RequestBody ProfileDto profileDto) {
-        ProfileDto registeredProfile = profileService.registerProfile(profileDto);
+    public ResponseEntity<ProfileDTO> registerProfile(@RequestBody ProfileDTO profileDto) {
+        ProfileDTO registeredProfile = profileService.registerProfile(profileDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(registeredProfile);
     }
 

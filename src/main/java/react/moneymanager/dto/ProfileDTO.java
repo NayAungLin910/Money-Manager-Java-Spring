@@ -1,6 +1,5 @@
 package react.moneymanager.dto;
 
-import jdk.jshell.Snippet;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProfileDto {
+public class ProfileDTO {
     private Long id;
     private String fullName;
     private String email;

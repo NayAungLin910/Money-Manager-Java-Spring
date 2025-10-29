@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import react.moneymanager.dto.AuthDTO;
-import react.moneymanager.dto.ProfileDto;
+import react.moneymanager.dto.ProfileDTO;
 import react.moneymanager.entity.ProfileEntity;
 import react.moneymanager.repository.ProfileRepository;
 import react.moneymanager.util.JwtUtil;
@@ -26,8 +26,8 @@ public class ProfileService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    public ProfileDto registerProfile(ProfileDto profileDto) {
-        ProfileEntity newProfile = toEntity(profileDto);
+    public ProfileDTO registerProfile(ProfileDTO ProfileDTO) {
+        ProfileEntity newProfile = toEntity(ProfileDTO);
         newProfile.setActivationToken(UUID.randomUUID().toString());
         newProfile = profileRepository.save(newProfile);
         // send activation email
@@ -38,20 +38,20 @@ public class ProfileService {
         return toDto(newProfile);
     }
 
-    public ProfileEntity toEntity(ProfileDto profileDto) {
+    public ProfileEntity toEntity(ProfileDTO ProfileDTO) {
         return ProfileEntity.builder()
-                .id(profileDto.getId())
-                .fullName(profileDto.getFullName())
-                .email(profileDto.getEmail())
-                .password(passwordEncoder.encode(profileDto.getPassword()))
-                .profileImagUrl(profileDto.getProfileImagUrl())
-                .createdAt(profileDto.getCreatedAt())
-                .updatedAt(profileDto.getUpdatedAt())
+                .id(ProfileDTO.getId())
+                .fullName(ProfileDTO.getFullName())
+                .email(ProfileDTO.getEmail())
+                .password(passwordEncoder.encode(ProfileDTO.getPassword()))
+                .profileImagUrl(ProfileDTO.getProfileImagUrl())
+                .createdAt(ProfileDTO.getCreatedAt())
+                .updatedAt(ProfileDTO.getUpdatedAt())
                 .build();
     }
 
-    public ProfileDto toDto(ProfileEntity profileEntity) {
-        return ProfileDto.builder()
+    public ProfileDTO toDto(ProfileEntity profileEntity) {
+        return ProfileDTO.builder()
                 .id(profileEntity.getId())
                 .fullName(profileEntity.getFullName())
                 .email(profileEntity.getEmail())
@@ -62,19 +62,19 @@ public class ProfileService {
                 .build();
     }
 
-    public ProfileDto toDto(ProfileEntity profileEntity, boolean isPublic) {
+    public ProfileDTO toDto(ProfileEntity profileEntity, boolean isPublic) {
 
-        ProfileDto.ProfileDtoBuilder profileDtoBuilder = ProfileDto.builder()
+        ProfileDTO.ProfileDTOBuilder ProfileDTOBuilder = ProfileDTO.builder()
                 .fullName(profileEntity.getFullName())
                 .email(profileEntity.getEmail())
                 .profileImagUrl(profileEntity.getProfileImagUrl())
                 .createdAt(profileEntity.getCreatedAt())
                 .updatedAt(profileEntity.getUpdatedAt());
         if (!isPublic) {
-            profileDtoBuilder.password(profileEntity.getPassword()).id(profileEntity.getId());
+            ProfileDTOBuilder.password(profileEntity.getPassword()).id(profileEntity.getId());
         }
 
-        return profileDtoBuilder.build();
+        return ProfileDTOBuilder.build();
     }
 
 
@@ -98,7 +98,7 @@ public class ProfileService {
         );
     }
 
-    public ProfileDto getPublicProfile(String email) {
+    public ProfileDTO getPublicProfile(String email) {
         ProfileEntity currentUser = null;
         if (email == null) {
             currentUser = getCurrentProfile();
