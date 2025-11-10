@@ -37,6 +37,25 @@ public class CategoryService {
         return categories.stream().map(this::toDto).toList();
     }
 
+    // get categories by type for current user
+    public List<CategoryDTO> getCategoriesByTypeForCurrentUser(String type) {
+        ProfileEntity profileEntity = profileService.getCurrentProfile();
+        List<CategoryEntity> categories = categoryRepository.findByTypeAndProfileId(type, profileEntity.getId());
+        return categories.stream().map(this::toDto).toList();
+    }
+
+    // update category
+    public CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDTO) {
+        ProfileEntity profileEntity = profileService.getCurrentProfile();
+        CategoryEntity category = categoryRepository.findByIdAndProfileId(categoryId, profileEntity.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found or not accessible"));
+        category.setName(categoryDTO.getName());
+        category.setIcon(categoryDTO.getIcon());
+        category.setType(categoryDTO.getType());
+        category = categoryRepository.save(category);
+        return toDto(category);
+    }
+
     // helper methods
     private CategoryEntity toEntity(CategoryDTO categoryDTO, ProfileEntity profile) {
         return CategoryEntity.builder()
