@@ -51,7 +51,6 @@ public class CategoryService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found or not accessible"));
         category.setName(categoryDTO.getName());
         category.setIcon(categoryDTO.getIcon());
-        category.setType(categoryDTO.getType());
         category = categoryRepository.save(category);
         return toDto(category);
     }
