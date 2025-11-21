@@ -5,14 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import react.moneymanager.dto.IncomeDTO;
-import react.moneymanager.dto.IncomeDTO;
-import react.moneymanager.entity.CategoryEntity;
+import react.moneymanager.entity.*;
 import react.moneymanager.entity.IncomeEntity;
-import react.moneymanager.entity.IncomeEntity;
-import react.moneymanager.entity.ProfileEntity;
 import react.moneymanager.repository.CategoryRepository;
 import react.moneymanager.repository.IncomeRepository;
-import react.moneymanager.repository.IncomeRepository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +19,16 @@ public class IncomeService {
     private final CategoryRepository categoryRepository;
     private final IncomeRepository incomeRepository;
     private final ProfileService profileService;
+
+    // Retrieves all the incomes for current month/based on the start date and end date
+    public List<IncomeDTO> getCurrentMonthIncomesForCurrentUser() {
+        ProfileEntity currentProfile = profileService.getCurrentProfile();
+        LocalDate now = LocalDate.now();
+        LocalDate startDate = now.withDayOfMonth(1);
+        LocalDate endDate = now.withDayOfMonth(now.lengthOfMonth());
+        List<IncomeEntity> incomes = incomeRepository.findByProfileIdAndDateBetween(currentProfile.getId(), startDate, endDate);
+        return incomes.stream().map(this::toDto).toList();
+    }
 
     // Adds a new income to the database
     public IncomeDTO addIncome(IncomeDTO incomeDTO){

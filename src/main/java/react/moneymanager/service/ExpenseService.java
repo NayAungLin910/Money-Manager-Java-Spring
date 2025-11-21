@@ -12,6 +12,8 @@ import react.moneymanager.entity.ProfileEntity;
 import react.moneymanager.repository.CategoryRepository;
 import react.moneymanager.repository.ExpenseRepository;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +22,16 @@ public class ExpenseService {
     private final CategoryRepository categoryRepository;
     private final ExpenseRepository expenseRepository;
     private final ProfileService profileService;
+
+    // Retrieves all the expenses for current month/based on the start date and end date
+    public List<ExpenseDTO> getCurrentMonthExpensesForCurrentUser() {
+        ProfileEntity currentProfile = profileService.getCurrentProfile();
+        LocalDate now = LocalDate.now();
+        LocalDate startDate = now.withDayOfMonth(1);
+        LocalDate endDate = now.withDayOfMonth(now.lengthOfMonth());
+        List<ExpenseEntity> expenses = expenseRepository.findByProfileIdAndDateBetween(currentProfile.getId(), startDate, endDate);
+        return expenses.stream().map(this::toDto).toList();
+    }
 
     // Adds a new expense to the database
     public ExpenseDTO addExpense(ExpenseDTO expenseDTO){
