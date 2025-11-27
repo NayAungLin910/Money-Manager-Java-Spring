@@ -14,7 +14,13 @@ import java.util.List;
 @RequestMapping("/incomes")
 public class IncomeController {
     private final IncomeService incomeService;
-    
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteIncome(@PathVariable Long id) {
+        incomeService.deleteIncomeById(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping
     public ResponseEntity<IncomeDTO> addIncome(@RequestBody IncomeDTO incomeDTO) {
         IncomeDTO newIncomeDTO = incomeService.addIncome(incomeDTO);

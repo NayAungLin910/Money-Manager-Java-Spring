@@ -26,4 +26,10 @@ public class ExpenseController {
         List<ExpenseDTO> expenseDTOS = expenseService.getCurrentMonthExpensesForCurrentUser();
         return ResponseEntity.status(HttpStatus.OK).body(expenseDTOS);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteExpense(@PathVariable Long id) {
+        expenseService.deleteExpenseById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
