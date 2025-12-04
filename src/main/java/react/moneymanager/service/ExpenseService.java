@@ -2,6 +2,7 @@ package react.moneymanager.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,6 +36,13 @@ public class ExpenseService {
         ProfileEntity profileEntity = profileService.getCurrentProfile();
         BigDecimal totalExpense = expenseRepository.findTotalExpenseByProfileId(profileEntity.getId());
         return totalExpense != null ? totalExpense : BigDecimal.ZERO;
+    }
+
+    // filter expenses
+    public List<ExpenseDTO> filterExpenses(LocalDate startDate, LocalDate endDate, String keyword, Sort sort) {
+        ProfileEntity profile = profileService.getCurrentProfile();
+        List<ExpenseEntity> expenseEntities = expenseRepository.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(profile.getId(), startDate, endDate, keyword, sort);
+        return  expenseEntities.stream().map(this::toDto).toList();
     }
 
     // delete expense by id for the current user
