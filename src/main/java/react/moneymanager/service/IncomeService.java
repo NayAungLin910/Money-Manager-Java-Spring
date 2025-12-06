@@ -1,9 +1,11 @@
 package react.moneymanager.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import react.moneymanager.dto.IncomeDTO;
 import react.moneymanager.dto.IncomeDTO;
 import react.moneymanager.dto.IncomeDTO;
 import react.moneymanager.entity.*;
@@ -27,6 +29,13 @@ public class IncomeService {
         ProfileEntity profileEntity = profileService.getCurrentProfile();
         List<IncomeEntity> income =  incomeRepository.findTop5ByProfileIdOrderByDateDesc(profileEntity.getId());
         return income.stream().map(this::toDto).toList();
+    }
+
+    // filter incomes
+    public List<IncomeDTO> filterIncomes(LocalDate startDate, LocalDate endDate, String keyword, Sort sort) {
+        ProfileEntity profile = profileService.getCurrentProfile();
+        List<IncomeEntity> incomeEntities = incomeRepository.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(profile.getId(), startDate, endDate, keyword, sort);
+        return  incomeEntities.stream().map(this::toDto).toList();
     }
 
     // get total incomes for current user
