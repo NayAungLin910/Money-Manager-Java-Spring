@@ -23,7 +23,7 @@ public class FilterController {
     private final ExpenseService expenseService;
     private final IncomeService incomeService;
 
-    @PostMapping("/filter")
+    @PostMapping
     public ResponseEntity<?> filterTransactions(@RequestBody FilterDTO filter) {
         // preparing sorting options
         LocalDate startDate = filter.getStartDate() != null ? filter.getStartDate() : LocalDate.MIN;
