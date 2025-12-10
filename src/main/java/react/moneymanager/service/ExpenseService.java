@@ -1,6 +1,7 @@
 package react.moneymanager.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,12 @@ public class ExpenseService {
         ProfileEntity profileEntity = profileService.getCurrentProfile();
         List<ExpenseEntity> expense =  expenseRepository.findTop5ByProfileIdOrderByDateDesc(profileEntity.getId());
         return expense.stream().map(this::toDto).toList();
+    }
+
+    // Notifications
+    public List<ExpenseDTO> getExpensesForUserOnDate(Long profileId, LocalDate date) {
+        List<ExpenseEntity> expenses =  expenseRepository.findByProfileIdAndDate(profileId, date);
+        return expenses.stream().map(this::toDto).toList();
     }
 
     // get total expenses for current user
