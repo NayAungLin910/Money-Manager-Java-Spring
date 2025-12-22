@@ -23,7 +23,8 @@ public class NotificationService {
     @Value("${money.manager.frontend.url}")
     private String frontendUrl;
 
-    @Scheduled(cron = "0 0 22 * * *", zone = "IST")
+    @Scheduled(cron = "0 * * * * *", zone = "IST")
+    // @Scheduled(cron = "0 0 22 * * *", zone = "IST")
     public void sendDailyIncomeExpenseReminder() {
         log.info("Job started: sendDailyIncomeExpenseReminder()");
         List<ProfileEntity> profiles = profileRepository.findAll();
@@ -37,13 +38,17 @@ public class NotificationService {
         log.info("Job completed: sendDailyIncomeExpenseReminder()");
     }
 
-    @Scheduled(cron = "0 0 23 * * *", zone = "IST")
+    @Scheduled(cron = "0 * * * * *", zone = "IST")
+    // @Scheduled(cron = "0 0 23 * * *", zone = "IST")
     public void sendDailyExpenseSummary() {
         log.info("Job started: sendDailyExpenseSummary()");
         List<ProfileEntity> profiles = profileRepository.findAll();
         for (ProfileEntity profile: profiles) {
             List<ExpenseDTO> todayExpenses = expenseService.getExpensesForUserOnDate(profile.getId(), LocalDate.now());
-            if(todayExpenses.isEmpty()) {
+            for(ExpenseDTO nowExpense: todayExpenses) {
+                System.out.println("expense: " + nowExpense);
+            }
+            if(!todayExpenses.isEmpty()) {
                 StringBuilder table = new StringBuilder();
                 table.append("<table style='boder-collapse:collapse;width:100%;'>");
                 table.append("<tr style='background-color:#f2f2f2;'><th style='border:1px solid #ddd;padding:8px;'>S.No</th><th style='border:1px solid #ddd;padding:8px;'>Name</th><th style='border:1px solid #ddd;padding:8px;'>Amount<th/><th style='border:1px solid #ddd;padding:8px;'>Category</th><th style='border:1px solid #ddd;padding:8px;'>Date</th></tr>");
@@ -51,8 +56,16 @@ public class NotificationService {
                 for(ExpenseDTO expenseDTO : todayExpenses) {
                     table.append("<tr>");
                     table.append("<td style='border:1px solid #ddd;padding:8px;'>").append(i++).append("</td>");
+                    table.append("<td style='border:1px solid #ddd;padding:8px;'>").append(expenseDTO.getName()).append("</td>");
+                    table.append("<td style='border:1px solid #ddd;padding:8px;'>").append(expenseDTO.getAmount()).append("</td>");
+                    table.append("<td style='border:1px solid #ddd;padding:8px;'>").append(expenseDTO.getCategoryId() != null ? expenseDTO.getCategoryName() : "N/A").append("</td>");
+                    table.append("</tr>");
                 }
+                table.append("</table");
+                String body = "Hi " + profile.getFullName() + "<br/><br/> Here is a summary of your expenses for today:<br/><br/>" + table + "<br/><br/>Best regards,<br/>Money Manager Team";
+                emailService.sendEmail(profile.getEmail(), "Your daily Expense summary", body);
             }
         }
+        log.info("Job completed: sendDailyExpenseSummary()");
     }
 }
