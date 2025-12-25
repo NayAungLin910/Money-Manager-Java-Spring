@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,13 +30,13 @@ public class ExpenseService {
     // get latest 5 expenses for the current user
     public List<ExpenseDTO> getLatest5ExpensesForCurrentUser() {
         ProfileEntity profileEntity = profileService.getCurrentProfile();
-        List<ExpenseEntity> expense =  expenseRepository.findTop5ByProfileIdOrderByDateDesc(profileEntity.getId());
+        List<ExpenseEntity> expense = expenseRepository.findTop5ByProfileIdOrderByDateDesc(profileEntity.getId());
         return expense.stream().map(this::toDto).toList();
     }
 
     // Notifications
     public List<ExpenseDTO> getExpensesForUserOnDate(Long profileId, LocalDate date) {
-        List<ExpenseEntity> expenses =  expenseRepository.findByProfileIdAndDate(profileId, date);
+        List<ExpenseEntity> expenses =  expenseRepository.findByProfileIdAndDateWithCategory(profileId, date);
         return expenses.stream().map(this::toDto).toList();
     }
 
@@ -49,7 +51,7 @@ public class ExpenseService {
     public List<ExpenseDTO> filterExpenses(LocalDate startDate, LocalDate endDate, String keyword, Sort sort) {
         ProfileEntity profile = profileService.getCurrentProfile();
         List<ExpenseEntity> expenseEntities = expenseRepository.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(profile.getId(), startDate, endDate, keyword, sort);
-        return  expenseEntities.stream().map(this::toDto).toList();
+        return expenseEntities.stream().map(this::toDto).toList();
     }
 
     // delete expense by id for the current user
@@ -97,11 +99,14 @@ public class ExpenseService {
     }
 
     private ExpenseDTO toDto(ExpenseEntity expenseEntity) {
+        System.out.println("Hello");
+        System.out.println(expenseEntity.getCategory() != null ? "Category Name: " + expenseEntity.getCategory().getName() : "Does not exist");
         return ExpenseDTO.builder()
                 .id(expenseEntity.getId())
                 .name(expenseEntity.getName())
                 .icon(expenseEntity.getIcon())
                 .categoryId(expenseEntity.getCategory() != null ? expenseEntity.getCategory().getId() : null)
+                .categoryName(expenseEntity.getCategory() != null ? expenseEntity.getCategory().getName() : null)
                 .amount(expenseEntity.getAmount())
                 .date(expenseEntity.getDate())
                 .createdAt(expenseEntity.getCreatedAt())

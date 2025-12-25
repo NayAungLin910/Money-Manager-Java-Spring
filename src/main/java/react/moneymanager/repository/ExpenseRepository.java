@@ -38,5 +38,15 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
     );
 
     // select * from tbl_expenses where profile_id = ?1 and date = ?2
-    List<ExpenseEntity> findByProfileIdAndDate(Long profileId, LocalDate date);
+    @Query("""
+    SELECT e
+    FROM ExpenseEntity e
+    JOIN FETCH e.category
+    WHERE e.profile.id = :profileId
+    AND e.date = :date
+""")
+    List<ExpenseEntity> findByProfileIdAndDateWithCategory(
+            @Param("profileId") Long profileId,
+            @Param("date") LocalDate date
+    );
 }
